@@ -1,0 +1,159 @@
+@model EventApp.Web.Models.Event
+
+@{
+    ViewData["Title"] = "Edit Event";
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Events</a></li>
+            <li class="breadcrumb-item active">Edit - @Model.Title</li>
+        </ol>
+    </nav>
+
+    <form asp-action="Edit" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ImagePath" />
+        <input type="hidden" asp-for="DocumentPath" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Event Details</h5>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="StartDateTime" class="form-label"></label>
+                                <input asp-for="StartDateTime" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="StartDateTime" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EndDateTime" class="form-label"></label>
+                                <input asp-for="EndDateTime" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="EndDateTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Location</h5>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Location" class="form-label">Venue Name</label>
+                            <input asp-for="Location" class="form-control" id="locationInput" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <input asp-for="Address" class="form-control" id="addressInput" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <input type="hidden" asp-for="Latitude" id="latitudeInput" />
+                        <input type="hidden" asp-for="Longitude" id="longitudeInput" />
+
+                        <div id="map" style="height: 300px;" class="mb-3 rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Media</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Event Image</label>
+                            <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png" 
+                                   onchange="showImagePreview(this, document.getElementById('imagePreview'))" />
+                            @if (!string.IsNullOrEmpty(Model.ImagePath))
+                            {
+                                <img src="@Model.ImagePath" id="imagePreview" class="mt-2 img-fluid" alt="Current image" />
+                            }
+                            else
+                            {
+                                <img id="imagePreview" class="mt-2 img-fluid d-none" alt="Image preview" />
+                            }
+                            <small class="text-muted d-block mt-1">Supported formats: JPG, PNG. Max size: 5MB</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Documents</label>
+                            <input type="file" name="document" class="form-control" accept=".pdf" />
+                            @if (!string.IsNullOrEmpty(Model.DocumentPath))
+                            {
+                                <div class="mt-2">
+                                    <a href="@Model.DocumentPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-file-pdf"></i> View Current Document
+                                    </a>
+                                </div>
+                            }
+                            <small class="text-muted d-block mt-1">Supported format: PDF. Max size: 10MB</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=@ViewData["GoogleMapsApiKey"]&libraries=places&callback=initMap"
+            async defer></script>
+    <script src="~/js/location.js"></script>
+    
+    <script>
+        function showImagePreview(input, imgElement) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imgElement.src = e.target.result;
+                    imgElement.classList.remove('d-none');
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Set min datetime to now for start date if it's in the future
+        const now = new Date();
+        const startDate = new Date('@Model.StartDateTime.ToString("s")');
+        if (startDate > now) {
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('StartDateTime').min = now.toISOString().slice(0, 16);
+        }
+
+        // Update end date min when start date changes
+        document.getElementById('StartDateTime').addEventListener('change', function() {
+            document.getElementById('EndDateTime').min = this.value;
+        });
+    </script>
+}
