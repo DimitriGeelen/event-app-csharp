@@ -1,0 +1,76 @@
+@model IEnumerable<EventApp.Web.Models.Event>
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Events</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create New Event
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm event-card">
+                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                    {
+                        <img src="@item.ImagePath" class="card-img-top event-image" alt="@item.Title">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                        <p class="card-text text-muted">
+                            <i class="bi bi-calendar"></i> @item.StartDateTime.ToString("MMM dd, yyyy")
+                            <br />
+                            <i class="bi bi-clock"></i> @item.StartDateTime.ToString("HH:mm") - @item.EndDateTime.ToString("HH:mm")
+                        </p>
+                        @if (!string.IsNullOrEmpty(item.Location))
+                        {
+                            <p class="card-text">
+                                <i class="bi bi-geo-alt"></i> @item.Location
+                            </p>
+                        }
+                        <div class="btn-group w-100">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center mt-4">
+            <p class="lead">No events found.</p>
+            <p>Get started by creating your first event!</p>
+            <a asp-action="Create" class="btn btn-lg btn-primary">
+                <i class="bi bi-plus-circle"></i> Create Event
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+    </script>
+}
