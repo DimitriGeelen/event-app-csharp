@@ -1,0 +1,122 @@
+@model EventApp.Web.Models.Event
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Events</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <img src="@Model.ImagePath" class="card-img-top" alt="@Model.Title">
+                }
+                <div class="card-body">
+                    <h1 class="card-title">@Model.Title</h1>
+                    <div class="d-flex align-items-center text-muted mb-3">
+                        <i class="bi bi-calendar-event me-2"></i>
+                        <span>
+                            @if (Model.StartDateTime.Date == Model.EndDateTime.Date)
+                            {
+                                @Model.StartDateTime.ToString("MMMM dd, yyyy")
+                                <text> | </text>
+                                @Model.StartDateTime.ToString("h:mm tt")
+                                <text> - </text>
+                                @Model.EndDateTime.ToString("h:mm tt")
+                            }
+                            else
+                            {
+                                @Model.StartDateTime.ToString("MMMM dd, yyyy h:mm tt")
+                                <text> - </text>
+                                @Model.EndDateTime.ToString("MMMM dd, yyyy h:mm tt")
+                            }
+                        </span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Location))
+                    {
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            <div>
+                                <strong>@Model.Location</strong>
+                                @if (!string.IsNullOrEmpty(Model.Address))
+                                {
+                                    <br />
+                                    <small class="text-muted">@Model.Address</small>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <p class="card-text">@Model.Description</p>
+
+                    @if (!string.IsNullOrEmpty(Model.DocumentPath))
+                    {
+                        <div class="mt-4">
+                            <h5>Attached Documents</h5>
+                            <a href="@Model.DocumentPath" target="_blank" class="btn btn-outline-primary">
+                                <i class="bi bi-file-pdf"></i> View Document
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Location</h5>
+                        <div id="map" style="height: 300px;" class="rounded"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+    {
+        <script src="https://maps.googleapis.com/maps/api/js?key=@ViewData["GoogleMapsApiKey"]&callback=initMap"
+                async defer></script>
+        <script>
+            function initMap() {
+                const location = {
+                    lat: @Model.Latitude,
+                    lng: @Model.Longitude
+                };
+
+                const map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 15,
+                    center: location,
+                });
+
+                new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: '@Model.Title'
+                });
+            }
+        </script>
+    }
+}
