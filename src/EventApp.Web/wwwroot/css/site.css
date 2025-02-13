@@ -1,0 +1,150 @@
+/* Custom styles for the event management application */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: #f8f9fa;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    background-color: #fff;
+}
+
+/* Card styles */
+.event-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+
+.event-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Form styles */
+.form-label {
+    font-weight: 500;
+}
+
+/* Location input and map styles */
+.location-input-group {
+    position: relative;
+}
+
+.location-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 4px 4px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.location-suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.location-suggestion-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Map styles */
+.map-container {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* File upload styles */
+.file-upload-preview {
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+/* Validation styles */
+.field-validation-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+}
+
+.input-validation-error {
+    border-color: #dc3545;
+}
+
+.input-validation-error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+/* Custom button styles */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-icon i {
+    font-size: 1.1em;
+}
+
+/* Loading indicator */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0d6efd;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .event-image {
+        height: 150px;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group > .btn {
+        border-radius: 4px !important;
+        margin-bottom: 0.5rem;
+    }
+}
